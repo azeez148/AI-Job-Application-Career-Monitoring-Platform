@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+node_modules/
+playwright-report/
+test-results/
+data/evaluation/*.jsonl
+!data/evaluation/example.synthetic.jsonl

@@ -1,0 +1,193 @@
+Revised Phased Roadmap: AI Job Application & Career Monitoring Platform
+Version 0.2 | 12 October 2026 | Replaces Section 10 (Delivery phases) of the Design Review Draft v0.1
+1. Roadmap principles
+The original plan builds the full platform first and tests the core idea last. This revision reverses that order. Each phase is small, ends in something a real user can use, and has an exit gate that decides whether the next phase is worth building.
+• Test the riskiest assumptions first: do tailored applications get responses, is fit scoring trustworthy, and is email even the right channel?
+• Keep the safety design: verified claims, two separate approval gates, no guessed emails, and Applied only after confirmed send. None of these are cut, only sequenced.
+• Defer infrastructure until it is needed: no Celery, Redis, LangGraph, admin portal or AWS hardening until a phase proves the need.
+• Postgres is the single source of truth for workflow state. Any orchestration tool is only an execution mechanism.
+• Design for tenancy, launch with one tenant: every candidate-owned table carries a tenant/user ID from day one.
+2. Non-goals (all phases)
+• No LinkedIn or Indeed scraping, and no CAPTCHA or access-control bypass.
+• No automatic sending without a recorded per-application authorization.
+• No guessing of email addresses.
+• No microservices.
+3. Success metrics
+Metric
+What it tells us
+Initial target (to calibrate)
+Time per application
+Is the tool actually saving effort?
+Under 10 minutes, from JD to approved draft
+Fit-score agreement
+Does the score match the user's own judgment?
+80% or more agreement on strong/maybe/skip
+Claims flagged per resume
+Is the model inventing content?
+Trending down; 0 unverified claims reach approval
+Resume edits before approval
+Is output quality good enough?
+Under 20% of lines changed by user
+Reply rate
+Is the core idea working?
+Compare email vs. ATS-only channel
+Cost per prepared application
+Is it economically viable?
+Set a ceiling in Phase 1 from measured data
+4. Phase overview
+Phase
+Name
+Duration (est.)
+Core question answered
+0
+Foundations and decisions
+1 week
+Are scope, rules and thresholds agreed?
+1
+Thin slice: JD to approved resume
+3 to 4 weeks
+Is fit scoring and verified tailoring good?
+2
+Drafts, tracking and manual send
+2 to 3 weeks
+Do users trust and use the output?
+3
+Gmail drafts, then gated sending
+3 to 4 weeks
+Do sent applications get replies?
+4
+Watchlists via public ATS APIs
+3 to 4 weeks
+Can discovery run without creating noise?
+5
+Contact research
+2 to 3 weeks
+Is email worth pursuing per source?
+6
+Orchestration and quality
+3 to 4 weeks
+Does branching justify LangGraph?
+7
+Multi-tenant and production hardening
+4 to 6 weeks
+Is it safe to open to other users?
+Durations assume one to two engineers and are planning estimates, not commitments.
+5. Phase details
+Phase 0: Foundations and decisions (1 week)
+Scope
+• Resolve the open design decisions: single tenant at launch, approval-only sending, Greenhouse and Lever first.
+• Define the verified claims schema: employer, title, dates, skills, metrics, education, certifications.
+• Collect an evaluation set of 50 to 100 real job descriptions rated by the user as strong, maybe or skip.
+• Write the non-goals, risk register and cost ceiling.
+• Decide the data-protection posture (consent, deletion, retention) for resume data, with UAE PDPL and GDPR in mind.
+Exit gate: evaluation set exists, claims schema agreed, review checklist items on safety gates and privacy accepted.
+Phase 1: Thin slice, JD to approved tailored resume (3 to 4 weeks)
+Scope
+• Angular user portal (minimal) and FastAPI with auth, tenant-aware schema and one tenant.
+• Profile, preferences, source resume upload (stored immutably) and verified claims review screen.
+• JD intake by paste, URL or upload, with extraction and basic deduplication.
+• Fit assessment with three tiers (strong, maybe, skip) and requirement-level evidence.
+• Tailored resume generation with a claim-to-source map, unverified claims flagged and excluded, plus DOCX/PDF output and a change summary.
+• Resume approval UI.
+• Single LLM provider behind a thin wrapper, logging model, prompt version, tokens and cost.
+• Prompt-injection defenses from day one: no tool access during JD parsing, output validation, untrusted-content labeling.
+Deliberately excluded: Celery, Redis, LangGraph, admin portal, watchlists, Gmail, Playwright.
+Exit gate
+• Fit tiers agree with the user's own ratings on the evaluation set at the Phase 0 target.
+• Zero unverified claims reach the approval screen in testing.
+• Measured cost per application is within the ceiling.
+Phase 2: Drafts, tracking and manual send (2 to 3 weeks)
+Scope
+• Application email drafting with per-application options. Salary and notice period are optional toggles, not defaults.
+• Application tracker: native PostgreSQL dashboard with an immutable event history.
+• Manual status marking (copied, sent, replied, rejected, interview) with notes.
+• Duplicate and re-apply rules: a cooldown per company and a no-reapply window.
+• Job source records and snapshots.
+Exit gate: the user completes real applications end to end using the tool for two weeks and rates trust and time saved.
+Phase 3: Gmail drafts, then gated sending (3 to 4 weeks)
+Scope
+• Per-user Gmail OAuth with minimum scopes. Start with create-draft only, so the user sends it themselves.
+• Plan and budget Google's OAuth verification, since restricted scopes may need a security assessment before any public launch.
+• Then add API sending with a separate recorded authorization per application, idempotency keys, and reconciliation of timeouts through the UNKNOWN_SEND_STATUS state before any retry.
+• Outbound caps: daily limit per user, per-company cooldown, and deliverability guidance (no bulk near-identical emails).
+• Mark Applied only after Gmail confirms.
+• Thread and message ID tracking, plus suggested status updates from replies.
+Exit gate
+• Reply rate measured on at least 30 to 50 sent applications.
+• Compare against ATS-form submissions. If email underperforms, de-prioritize Phase 5 and shift effort toward ATS-assisted preparation (prefilled answers and tailored resume ready for manual submission).
+Phase 4: Watchlists via public ATS APIs (3 to 4 weeks)
+Scope
+• Company and bulk watchlist entry, official careers URL resolution with provenance.
+• Greenhouse and Lever adapters using public job-board endpoints. Workday and generic sites are deferred.
+• Per-company scan interval with a default (for example daily) and a global cap.
+• Introduce Celery, Redis and Beat here, for the first time, because scheduling now justifies them.
+• Canonical job identity strategy for dedup across reposts and edits.
+• Cheap pre-filter (rules and embeddings) before LLM evaluation, plus per-user LLM budgets.
+• Notifications for qualified matches, scan health and failure reporting.
+• Playwright only as a documented last-resort fallback, and only where terms and robots rules allow.
+Exit gate: match noise is acceptable (users act on at least half of the strong matches surfaced) and monthly cost per user stays within budget.
+Phase 5: Contact research (2 to 3 weeks, conditional)
+Scope
+• Official-domain verification and sourced careers contact discovery. Store contact, URL, observed time and verification status.
+• A clear "no verified contact found" outcome, with no guessing.
+• Per-source-type guidance: where an ATS is the expected channel, route to ATS-assisted preparation rather than email.
+Condition: only build the email-discovery portion if Phase 3 data shows email replies justify it.
+Phase 6: Orchestration and quality (3 to 4 weeks)
+Scope
+• Adopt LangGraph only if the pipeline now has branching, loops or human-in-the-loop checkpoints that a linear service can't handle cleanly. Otherwise keep the simpler pipeline.
+• Claim-verification loop with deterministic checks for numbers, dates and employer names, and LLM checks only for softer wording.
+• Agent traces, failure recovery, dead-letter handling and automated evaluation runs against the Phase 0 dataset.
+• Provider abstraction through LiteLLM and a model-capability registry, with cross-provider failover opt-in only.
+Exit gate: evaluation scores do not regress with each prompt or model change.
+Phase 7: Multi-tenant and production hardening (4 to 6 weeks)
+Scope
+• Admin portal: RBAC, user management, provider credentials, budgets and quotas, crawler policy, audit exports.
+• Tenant isolation review, encryption, secrets manager, redacted logs, retention and deletion workflows.
+• Security review and penetration testing, load testing, backups and recovery drills.
+• AWS deployment (S3, managed Postgres, workers) with cost targets and monitoring.
+• Legal review of terms of service, privacy policy and data residency before public launch.
+Exit gate: security review passed, cost per user is sustainable, and legal and OAuth verification items are complete.
+6. Dependencies and critical path
+• Phase 0's evaluation set gates every quality decision from Phase 1 onward.
+• Phase 3's reply-rate data gates Phase 5 and shapes Phase 6.
+• Google OAuth verification should start during Phase 3, since approval can take weeks.
+• Phase 4 gates the introduction of any background infrastructure.
+7. Top risks and mitigations
+Risk
+Mitigation
+Phase
+Hallucinated resume claims
+Claims schema, deterministic checks, approval gate
+1, 6
+Prompt injection from JD text
+No tools during parsing, allow-lists, output validation
+1
+Email is the wrong channel
+Measure reply rate before building discovery
+3, 5
+Spam-like volume harms the user's reputation
+Daily caps, cooldowns, no-reapply window
+2, 3
+Gmail policy and deliverability issues
+Drafts first, minimum scopes, early verification
+3
+Scraping and terms-of-service exposure
+Public APIs first, Playwright as a limited fallback
+4
+LLM cost growth from watchlists
+Pre-filter, per-user budgets, cost logging
+1, 4
+Duplicate emails after timeouts
+Idempotency keys, reconciliation before retry
+3
+Personal data and privacy obligations
+Retention and deletion rules, redacted logs
+0, 7
+State drift between orchestration layers
+Postgres as the single source of truth
+4, 6
+8. Decisions to confirm with the owner
+• Is the cost ceiling per prepared application agreed?
+• Who will rate the Phase 0 evaluation set, and how many users will pilot Phases 2 and 3?
+• Are Phase gates strict stop/go decisions, or advisory?
+• Which notification channel comes first (email, in-app, or both)?

@@ -1,0 +1,4 @@
+# Evaluation data intake
+Store the real owner-rated set as `private.jsonl` here (ignored by Git). Do not commit resumes or personal data. Each line follows `schemas/evaluation.schema.json`: id, jd_text, source_url, label (strong/maybe/skip), rated_by, rated_at (ISO timestamp), synthetic (false for real records).
+Collect 50–100 distinct real JDs spanning all three tiers; record permission/provenance and rate against the candidate's verified profile before model scoring. Keep a held-out subset, record dataset version/hash and avoid tuning on that subset. Synthetic fixtures test software only and never count as product evaluation evidence. The validator cannot establish truth or permission; human review is required.
+Run `PYTHONPATH=src python -m career_platform.foundations data/evaluation/private.jsonl`. Exit 0 means dataset structure/count/coverage passed; it does not accept privacy, accuracy or the complete phase gate.

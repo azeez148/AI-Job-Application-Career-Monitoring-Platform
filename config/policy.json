@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "launch": {
+    "single_tenant": true,
+    "gate_mode": "strict",
+    "notifications": "in_app"
+  },
+  "quality": {
+    "minimum_evaluation_records": 50,
+    "maximum_evaluation_records": 100,
+    "fit_agreement_target": 0.8,
+    "unverified_claims_allowed": 0
+  },
+  "budget": {
+    "currency": "USD",
+    "per_application_ceiling": 0.25,
+    "monthly_per_user_ceiling": 10
+  },
+  "outbound": {
+    "enabled": false,
+    "daily_limit": 0,
+    "company_cooldown_days": 30,
+    "no_reapply_days": 90,
+    "require_resume_approval": true,
+    "require_send_authorization": true
+  },
+  "discovery": {
+    "providers": [
+      "greenhouse",
+      "lever"
+    ],
+    "scan_interval_hours": 24,
+    "global_scan_cap": 50,
+    "browser_fallback_enabled": false
+  },
+  "privacy": {
+    "consent_required": true,
+    "retention_days": 90,
+    "deletion_sla_days": 30,
+    "data_region": null,
+    "legal_review_complete": false
+  },
+  "pilot": {
+    "evaluator": "project_owner",
+    "users": 1
+  }
+}
