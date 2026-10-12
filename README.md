@@ -3,7 +3,18 @@ Phase 0 foundation implementation. This repository does not yet contain a runnin
 
 Start with [the phased delivery plan](docs/ROADMAP.md), [current progress](docs/PROGRESS.md), and [Phase 0 results](docs/phases/00-foundations.md).
 
-## Development
+## Docker (recommended)
+Docker Engine with Compose v2 is required. From this checkout:
+```sh
+docker compose config --quiet
+docker compose build foundations
+docker compose run --rm foundations
+```
+For this cloud machine, use the documented [cloud build fallback](docs/DOCKER.md), which downloads dependencies on the host before building.
+
+This runs the Phase 0 unit/integration suite in an isolated Python 3.12 container. It does not start a web application. See [Docker development](docs/DOCKER.md) for scope and the Phase 1 service plan.
+
+## Native development
 Python 3.12 is validated. From this checkout:
 ```sh
 python -m venv /workspace/career-platform-venv

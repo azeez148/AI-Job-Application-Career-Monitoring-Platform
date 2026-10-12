@@ -34,3 +34,10 @@ Defaults for budget and pilot size are recorded under the owner's instruction to
 
 ## Pending and next step
 Phase 0 is not gate-complete. No phase beyond 0 has started because the owner chose strict gates. Once evidence and checklist acceptance exist, record acceptance here and start unit 1.1. Do not publish a final project achievement report until the full phase sequence has been resolved.
+
+## Docker follow-up (12 October 2026)
+Owner requested Docker support. Added a digest-pinned Python test image, Compose runner, restricted build context, non-root/read-only execution and a Docker CI job. Phase 1 unit 1.1 now explicitly includes Angular/FastAPI/PostgreSQL containers, health checks, persistent development storage and an isolated test database.
+
+Validation: Compose configuration passed; the image built using `compose.cloud.yaml`; all 14 tests executed and passed inside Docker (10 unit, 4 integration). Container build dependency checking also passed. The default online build could not resolve registry/proxy DNS in this cloud environment. The documented fallback downloads wheels on the host with normal HTTPS verification and installs them without build-network access. Initial non-root test discovery found zero tests because copied subdirectories retained restrictive ownership; explicit copy ownership fixed it. The zero-test run was a failure and is not counted as validation.
+
+The default online build is retained for normally connected machines and hosted CI; its success in those environments has not been verified here. See `docs/DOCKER.md` for exact cloud commands. This follow-up does not accept the Phase 0 evidence gate or implement Phase 1 application services.

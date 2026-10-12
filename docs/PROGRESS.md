@@ -13,3 +13,5 @@ Updated 12 October 2026. This is an interim record, not a whole-project completi
 | 7 | Not started | Blocked by Phase 6 | Security, operations and launch review |
 
 Achieved: delivery plan, bounded units, provisional configurable policy, provenance contracts, verified-claim filtering and evaluation intake checks. Expected next: a trustworthy JD-to-approved-resume flow after Phase 0 acceptance. No live AI assessment, auth, UI, database, resume generation, Gmail or deployment exists yet. Whole-project outcomes and future plans will be consolidated in `FINAL-REPORT.md` only once all gates are resolved.
+
+Docker follow-up: Phase 0 now has a containerized test runner; 14 tests passed in Docker using the documented cloud dependency-download fallback. Phase 1's planned service topology is explicitly recorded in `docs/DOCKER.md`. The real-data/checklist gate remains pending.

@@ -1,0 +1,15 @@
+**
+!Dockerfile
+!requirements-dev.txt
+!schemas/
+!schemas/**
+!config/
+!config/policy.json
+!src/
+!src/**
+!tests/
+!tests/**
+**/__pycache__/
+**/*.pyc
+!.docker-wheels/
+!.docker-wheels/*.whl

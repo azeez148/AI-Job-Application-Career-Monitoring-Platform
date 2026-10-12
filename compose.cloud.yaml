@@ -1,0 +1,7 @@
+# Optional fallback for cloud environments without build-container DNS/egress.
+services:
+  foundations:
+    build:
+      network: none
+      args:
+        DEPENDENCY_STAGE: offline

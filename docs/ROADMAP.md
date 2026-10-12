@@ -49,7 +49,7 @@ Is fit scoring and verified tailoring good?
 
 | Unit | Responsibility | Deliverable |
 |---|---|---|
-| 1.1 | Portal, auth and storage | Angular, FastAPI, PostgreSQL migrations; authenticated identity determines tenant/user scope; negative isolation tests. |
+| 1.1 | Portal, auth and storage | Docker Compose for Angular, FastAPI and PostgreSQL, persistent development volume, health checks and a separate disposable test database; PostgreSQL migrations; authenticated identity determines tenant/user scope; negative isolation tests. |
 | 1.2 | Profile and claims | Preferences, immutable source resume storage, hash/provenance, upload limits and reviewed claim lifecycle. |
 | 1.3 | JD intake | Paste, file and URL adapters, extraction, snapshots, dedup; URL fetching rejects private addresses and unsafe redirects. |
 | 1.4 | Assessment and tailoring | Three tiers and evidence per requirement; single provider adapter, validated outputs, no tools during parsing, prompt versions and token/cost ledger. |

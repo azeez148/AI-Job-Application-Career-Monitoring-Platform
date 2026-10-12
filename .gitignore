@@ -7,3 +7,4 @@ playwright-report/
 test-results/
 data/evaluation/*.jsonl
 !data/evaluation/example.synthetic.jsonl
+.docker-wheels/
